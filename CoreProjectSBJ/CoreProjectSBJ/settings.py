@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,25 +20,28 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6x#2y*=l!bj8q!=1#(kgy%kmnp-o$v3nh*&6-dw369q2f#oeku'
+SECRET_KEY = 'django-insecure-km0*&=ae!z4-gi$jugrvdchaa(ys8*u*w_$d3y-y#c^&d+)(33'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.59', 'localhost', '127.0.0.1', '0.0.0.0']
-
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.1.59']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'App_main',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.line',
     'django.contrib.admin',
     'django.contrib.auth',
-    'django.contrib.contenttypes',
+    'django.contrib.contenttypes', 
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'CoreProjectSBJ.urls'
@@ -56,7 +60,7 @@ ROOT_URLCONF = 'CoreProjectSBJ.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'app_main/templates',],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -124,31 +128,19 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-
-
-AUTHENTICATION_BACKENDS = [
-    'social_core.backends.line.LineOAuth2',  # เพิ่ม LINE เป็น backend
-    'django.contrib.auth.backends.ModelBackend',  # ใช้ Django auth ปกติด้วย
+AUTHENTICATION_BACKENDS =[
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend'
 ]
 
-SOCIAL_AUTH_LINE_KEY = int('2006842390')  # แทนที่ด้วย Channel ID
-SOCIAL_AUTH_LINE_SECRET = '10729f15d6939ae4be07424229421ee1'  # แทนที่ด้วย Channel Secret
-SOCIAL_AUTH_LINE_SCOPE = ['profile', 'openid', 'email']
+SOCIALACCOUNT_PROVIDERS = {
+    'line': {
+        'SCOPE': ['openid', 'profile', 'email'],
+        'AUTH_PARAMS': {'prompt': 'consent'},
+    }
+}
 
-#LOGIN_REDIRECT_URL = '/'  # หลังจาก login สำเร็จให้ไปหน้าแรก
-LOGOUT_REDIRECT_URL = '/'  # หลัง logout กลับไปหน้าแรก
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-SOCIAL_AUTH_URL_NAMESPACE = 'social'
-
-SOCIAL_AUTH_PIPELINE = (
-    'social_core.pipeline.social_auth.social_details',
-    'social_core.pipeline.social_auth.social_uid',
-    'social_core.pipeline.social_auth.auth_allowed',
-    'social_core.pipeline.social_auth.social_user',
-    'social_core.pipeline.user.get_username',
-    'social_core.pipeline.user.create_user',
-    'social_core.pipeline.social_auth.associate_user',
-    'social_core.pipeline.social_auth.load_extra_data',
-    'social_core.pipeline.user.user_details',
-)
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED = True
